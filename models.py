@@ -1,6 +1,5 @@
 import datetime
 
-
 class Transaction:
     id: int
     type: str
