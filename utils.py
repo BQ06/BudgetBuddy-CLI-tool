@@ -10,3 +10,5 @@ def parse_date(s: str):
 def parse_month(s: str):
     """Parse a month string in YYYY-MM format."""
     return datetime.datetime.strptime(s, '%Y-%m').date()
+
+def parse_
