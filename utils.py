@@ -18,7 +18,7 @@ def parse_amount(s: str):  # https://stackoverflow.com/questions/379906/how-do-i
     try:
         return int(round(float(s) * 100))
     except (ValueError, TypeError):
-        return print("Please enter a Valid amount")
+        return print("Please enter a Valid amount as a number")
                         
 
 
