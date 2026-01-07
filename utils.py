@@ -21,17 +21,20 @@ def parse_amount(s: str):  # https://stackoverflow.com/questions/379906/how-do-i
         return print("Please enter a Valid amount as a number")
                         
 
-
-def format_money(pennies: int):
+def format_money(pennies: int): # https://docs.python.org/3/library/decimal.html used for money formatting
     pounds = Decimal(pennies) / Decimal(100)
     return f"£{pounds:.2f}"
 
-
-
-
 def validate_type(t: str):
-  return None
+    validate_types = {'income', 'expense'}
+    if t in validate_types:
+        return t
+    else:
+        return None
 
-def date_in_range(d: date, start: date, end: date):
-
-    return None
+def date_in_range(d: datetime.date, start: datetime.date, end: datetime.date):
+    if start <= d <= end: # function checks if the date d is between start and end
+        return True
+    else:
+        return False
+    
