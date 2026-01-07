@@ -1,6 +1,8 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
 
+from models import Transaction
+
 class main:
 
     def build_parser():
@@ -41,3 +43,25 @@ class main:
         print("Viewing transactions...")
       elif args.command == "quit":
         print("Quitting application...")
+
+
+
+def print_transactions_table(txns: list[Transaction]):
+    # Print transactions in a formatted table
+    print(f"{'ID':<5} {'Type':<10} {'Amount':<10} {'Category':<15} {'Date':<12} {'Note':<20}")
+    print("-" * 75)
+    for txn in txns:
+        print(f"{txn.id:<5} {txn.type:<10} {txn.amount:<10.2f} {txn.category:<15} {txn.date:<12} {txn.note:<20}")
+
+
+def print_summary(summary: dict):
+    # Print budget summary
+    print("Budget Summary:")
+    for category, data in summary.items():
+        print(f"Category: {category}")
+        print(f"  Budget: {data['budget']:.2f}")
+        print(f"  Spent: {data['spent']:.2f}")
+        print(f"  Remaining: {data['remaining']:.2f}")
+        print()
+  
+  
