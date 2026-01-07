@@ -178,9 +178,11 @@ def summarise(
 
     total_income = sum(_amount(t.get("amount")) for t in filtered if t.get("type") == "income")
     total_expense = sum(_amount(t.get("amount")) for t in filtered if t.get("type") == "expense")
+    average_daily_spend = total_expense / max((date_to or date.today()) - (date_from or date.today()).days + 1, 1) 
 
     return {
         "total_income": total_income,
         "total_expense": total_expense,
         "net_savings": total_income - total_expense,
+        "average_daily_spend": average_daily_spend,
     }

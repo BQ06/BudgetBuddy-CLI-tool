@@ -17,9 +17,9 @@ class main:
 
      # Add subparsers for each command
      add_parser = subparsers.add_parser("add", help="Add a new transaction")
-     add_parser.add_argument("type", choices=["income", "expense"], help="Type of transaction", type = str)
-     add_parser.add_argument("amount", type=float, help="Amount of the transaction")
-     add_parser.add_argument("category", help="Category of the transaction", type = str)
+     add_parser.add_argument("--type", choices=["income", "expense"], help="Type of transaction", type = str)
+     add_parser.add_argument("--amount", type=float, help="Amount of the transaction")
+     add_parser.add_argument("--category", help="Category of the transaction", type = str)
      add_parser.add_argument("--note", help="Optional note for the transaction", type = str)
      add_parser.add_argument("--date", help="Date of the transaction in YYYY-MM-DD format (default: today)", type = str)
      add_parser.add_argument("--budget", help="Set a monthly budget for a category", type = str)
@@ -62,6 +62,7 @@ def print_summary(summary: dict):
         print(f"  Budget: {data['budget']:.2f}")
         print(f"  Spent: {data['spent']:.2f}")
         print(f"  Remaining: {data['remaining']:.2f}")
-        print()
+        print() 
+        
   
   
