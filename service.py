@@ -8,12 +8,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from models import Transaction  # Budget not needed in this file yet
 
 
-# Pull in JSON from storage
+# Pullin JSO?N from storage
 DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), ".budget_buddy")
-DEFAULT_FILE = os.path.join(DEFAULT_DATA_DIR, "Transaction.json")
+DEFAULT_TXN_FILE = os.path.join(DEFAULT_DATA_DIR, "Transaction.json")
 
 
-def ensure_file(path: str = DEFAULT_FILE) -> None:
+def _ensure_data_file(path: str = DEFAULT_TXN_FILE) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if not os.path.exists(path):
         with open(path, "w", encoding="utf-8") as f:

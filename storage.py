@@ -1,30 +1,35 @@
-import json
-import os.path
-from models import Transaction, Budget
+from __future__ import annotations
+import json, os
+from typing import Any, Dict, List, TypedDict
 
-# Used this to help with logic for JSON handling  https://realpython.com/python-json/#writing-json-with-python
+class StorageData(TypedDict):
+    next_id: int
+    transactions: List[Dict[str, Any]]
 
-def load_data():
-    """Load transactions and budgets from JSON files."""
-    transactions = []
-    budgets = []
-    if os.path.exists('Transaction.json') == True:
-        with open('Transaction.json') as f:
-            transactions = json.load(f)
-    else:
-        pass
-    if os.path.exists('Budget.json') == True:
-        with open('Budget.json') as f:
-            budgets = json.load(f)
-    else:
-        pass
-    return transactions, budgets
+DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), ".budget_buddy")
+DEFAULT_FILE = os.path.join(DEFAULT_DATA_DIR, "transactions.json")
 
-# copied from above link, 'w' mode overwrites existing file or creates new one and f is the file object. 
-def save_data(transactions, budgets):
-    """Save transactions and budgets to JSON files."""
-    with open('Transaction.json', 'w') as f:
-        json.dump(transactions, f, indent=4)
-    with open('Budget.json', 'w') as f:
-        json.dump(budgets, f, indent=4)
-    return transactions, budgets
+def ensure_file(path: str = DEFAULT_FILE) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({"next_id": 1, "transactions": []}, f, indent=2)
+
+def load_data(path: str = DEFAULT_FILE) -> StorageData:
+    ensure_file(path)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict) or "next_id" not in data or "transactions" not in data:
+            # fail-safe: reset to empty-but-valid
+            return {"next_id": 1, "transactions": []}
+        if not isinstance(data["transactions"], list):
+            return {"next_id": int(data.get("next_id", 1)), "transactions": []}
+        return {"next_id": int(data["next_id"]), "transactions": data["transactions"]}
+    except json.JSONDecodeError:
+        return {"next_id": 1, "transactions": []}
+
+def save_data(data: StorageData, path: str = DEFAULT_FILE) -> None:
+    ensure_file(path)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
