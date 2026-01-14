@@ -52,15 +52,54 @@ def build_parser():
      set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
      set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
      set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
-
-    
       return parser
+     
 
 
 def main():
     parser = build_parser()
     args = parser.parse_args()
     handle_args(args)
+
+    if args.command == "add":
+        txn = Transaction(
+            id=0,
+            type=args.type,
+            amount_pennies=parse_amount(args.amount),
+            category=args.category,
+            date=parse_date(args.date) if args.date else datetime.date.today(),
+            note=args.note,
+        )
+        add_transactions([txn])
+        print("Added.")
+
+    elif args.command == "view":
+        txns = list_transactions(
+            txn_type=args.type,
+            category=args.category,
+            date_from=parse_date(args.date_from) if args.date_from else None,
+            date_to=parse_date(args.date_to) if args.date_to else None,
+        )
+        # print them...
+
+    elif args.command == "summary":
+        s = summarise(
+            date_from=parse_date(args.date_from) if args.date_from else None,
+            date_to=parse_date(args.date_to) if args.date_to else None,
+        )
+        print(s)
+
+    elif args.command == "delete":
+        delete_transaction(args.id)
+        print("Deleted.")
+
+    elif args.command == "quit":
+        if args.yes:
+            return
+        print("Use --yes to quit.")
+
+if __name__ == "__main__":
+    main()
 
 def handle_args(args):
       # Handle the parsed arguments and call appropriate functions
