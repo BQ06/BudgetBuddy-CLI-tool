@@ -98,6 +98,12 @@ def main():
             return
         print("Use --yes to quit.")
 
+    elif args.command == "set_budget":
+        if args.category is None or args.monthly is None:
+            print("Please provide both --category and --monthly arguments.")
+            return
+        print(f"Setting budget for category {args.category} to {args.monthly}.")
+
 if __name__ == "__main__":
     main()
 
