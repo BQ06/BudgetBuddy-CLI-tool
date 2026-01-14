@@ -28,12 +28,32 @@ class main:
      # View transactions parser to see all transactions or filter by type
      view_parser = subparsers.add_parser("view", help="View transactions")
      view_parser.add_argument("--type", choices=["income", "expense"], help="Filter by transaction type", type = str)
+     view_parser.add_argument("==from", help="Start date for filtering transactions in YYYY-MM-DD format", type = str)
+     view_parser.add_argument("--to", help="End date for filtering transactions in YYYY-MM-DD format", type = str)
+     view_parser.add_argument("--category", help="Filter by category", type = str)
+    
 
      # Set quit parser to exit application if needed 
      quit_parser = subparsers.add_parser("quit", help="Quit the application")
      quit_parser.add_argument("--confirm", choices=["yes", "no"], help="Confirm quitting the application", type = bool)
 
-     return parser
+
+     # summary parser to view budget summary based on date range provided by user
+     summary_parser = subparsers.add_parser("summary", help="View budget summary")
+     summary_parser.add_argument("==from", help="Start date for summary in YYYY-MM-DD format", type = str)
+     summary_parser.add_argument("--to", help="End date for summary in YYYY-MM-DD format", type = str)
+
+
+    # delete parser to remove transactiosn by ID
+     delete_parser = subparsers.add_parser("delete", help="Delete a transaction")
+     delete_parser.add_argument("--id", help="ID of the transaction to delete", type = int)
+
+
+     set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
+     set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
+     set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
+
+      
 
     def handle_args(args):
       # Handle the parsed arguments and call appropriate functions
