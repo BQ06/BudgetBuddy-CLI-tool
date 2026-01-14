@@ -1,6 +1,7 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
 import datetime
+from utils import format_money
 from utils import parse_date, parse_amount, validate_type
 from models import Transaction
 from storage import add_transactions, list_transactions, delete_transaction, summarise
@@ -52,7 +53,7 @@ def build_parser():
      set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
      set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
      set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
-      return parser
+     return parser
      
 
 
@@ -121,9 +122,11 @@ def handle_args(args):
 def print_transactions_table(txns: list[Transaction]):
     # Print transactions in a formatted table
     print(f"{'ID':<5} {'Type':<10} {'Amount':<10} {'Category':<15} {'Date':<12} {'Note':<20}")
-    print("-" * 75)
+    print("-" * 80)
     for txn in txns:
-        print(f"{txn.id:<5} {txn.type:<10} {txn.amount:<10.2f} {txn.category:<15} {txn.date:<12} {txn.note:<20}")
+        amt = format_money(txn.amount_pennies)
+        note = txn.note or ""
+        print(f"{txn.id:<5} {txn.type:<10} {amt:<12} {txn.category:<15} {txn.date:<12} {txn.note:<20}")
 
 
 def print_summary(summary: dict):
