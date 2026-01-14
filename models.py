@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass
 from typing import Optional, Literal
-import __future__
+from __future__ import annotations
 
 TxnType = Literal['income', 'expense', 'transfer']
 
@@ -12,10 +12,11 @@ class Transaction:
     amount_pennies: int
     category: str
     date: datetime.date
-    note: Optional[str]
-    created_at: datetime
+    note: Optional[str] = None
+    created_at: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
 
+@dataclass
 class Budget:
     category: str
-    monthly_limit: int
+    monthly_limit_pennies: int
 

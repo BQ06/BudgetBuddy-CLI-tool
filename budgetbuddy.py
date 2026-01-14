@@ -1,11 +1,11 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
-
+import datetime
+from utils import parse_date, parse_amount, validate_type
 from models import Transaction
+from storage import add_transactions, list_transactions, delete_transaction, summarise
 
-class main:
-
-    def build_parser():
+def build_parser():
       # Create the top-level parser, inside of parser build_parser function we have defined all parser information
      parser = argparse.ArgumentParser(
        prog='Budget Buddy', 
@@ -53,9 +53,16 @@ class main:
      set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
      set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
 
-      
+    
+      return parser
 
-    def handle_args(args):
+
+def main():
+    parser = build_parser()
+    args = parser.parse_args()
+    handle_args(args)
+
+def handle_args(args):
       # Handle the parsed arguments and call appropriate functions
       if args.command == "add":
         print("Adding transaction...")
