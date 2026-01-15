@@ -1,66 +1,65 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
 import datetime
-from utils import format_money
-from utils import parse_date, parse_amount, validate_type
-from models import Transaction
-from storage import add_transactions, list_transactions, delete_transaction, summarise
 
+from models import Transaction
+from utils import parse_amount, parse_date, format_money
+from service import add_transactions, list_transactions, delete_transaction, summarise
+
+     
+     # Create the top-level parser, inside of parser build_parser function we have defined all parser information
 def build_parser():
-      # Create the top-level parser, inside of parser build_parser function we have defined all parser information
-     parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
        prog='Budget Buddy', 
        description="Budget Buddy - Track your expenses and manage your budget.", 
        exit_on_error=True
        )
       # Create subparsers for different commands
-     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
      # Add subparsers for each command
-     add_parser = subparsers.add_parser("add", help="Add a new transaction")
-     add_parser.add_argument("--type", choices=["income", "expense"], help="Type of transaction", type = str)
-     add_parser.add_argument("--amount", type=float, help="Amount of the transaction")
-     add_parser.add_argument("--category", help="Category of the transaction", type = str)
-     add_parser.add_argument("--note", help="Optional note for the transaction", type = str)
-     add_parser.add_argument("--date", help="Date of the transaction in YYYY-MM-DD format (default: today)", type = str)
-     add_parser.add_argument("--budget", help="Set a monthly budget for a category", type = str)
+    add_parser = subparsers.add_parser("add", help="Add a new transaction")
+    add_parser.add_argument("--type", required=True, choices=["income", "expense", "transfer"])
+    add_parser.add_argument("--amount", required=True)  # string like 12.50
+    add_parser.add_argument("--category", required=True)
+    add_parser.add_argument("--note")
+    add_parser.add_argument("--date")
      
 
      # View transactions parser to see all transactions or filter by type
-     view_parser = subparsers.add_parser("view", help="View transactions")
-     view_parser.add_argument("--type", choices=["income", "expense"], help="Filter by transaction type", type = str)
-     view_parser.add_argument("==from", help="Start date for filtering transactions in YYYY-MM-DD format", type = str)
-     view_parser.add_argument("--to", help="End date for filtering transactions in YYYY-MM-DD format", type = str)
-     view_parser.add_argument("--category", help="Filter by category", type = str)
+    view_parser = subparsers.add_parser("view", help="View transactions")
+    view_parser.add_argument("--type", choices=["income", "expense"], help="Filter by transaction type", type = str)
+    view_parser.add_argument("--from", help="Start date for filtering transactions in YYYY-MM-DD format", type = str)
+    view_parser.add_argument("--to", help="End date for filtering transactions in YYYY-MM-DD format", type = str)
+    view_parser.add_argument("--category", help="Filter by category", type = str)
     
 
      # Set quit parser to exit application if needed 
-     quit_parser = subparsers.add_parser("quit", help="Quit the application")
-     quit_parser.add_argument("--confirm", choices=["yes", "no"], help="Confirm quitting the application", type = bool)
+    quit_parser = subparsers.add_parser("quit", help="Quit the application")
+    quit_parser.add_argument("--yes", action="store_true")
 
 
      # summary parser to view budget summary based on date range provided by user
-     summary_parser = subparsers.add_parser("summary", help="View budget summary")
-     summary_parser.add_argument("==from", help="Start date for summary in YYYY-MM-DD format", type = str)
-     summary_parser.add_argument("--to", help="End date for summary in YYYY-MM-DD format", type = str)
+    summary_parser = subparsers.add_parser("summary", help="View budget summary")
+    summary_parser.add_argument("==from", help="Start date for summary in YYYY-MM-DD format", type = str)
+    summary_parser.add_argument("--to", help="End date for summary in YYYY-MM-DD format", type = str)
 
 
     # delete parser to remove transactiosn by ID
-     delete_parser = subparsers.add_parser("delete", help="Delete a transaction")
-     delete_parser.add_argument("--id", help="ID of the transaction to delete", type = int)
+    delete_parser = subparsers.add_parser("delete", help="Delete a transaction")
+    delete_parser.add_argument("--id", help="ID of the transaction to delete", type = int)
 
 
-     set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
-     set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
-     set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
-     return parser
+    set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
+    set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
+    set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
+    return parser
      
 
 
 def main():
     parser = build_parser()
     args = parser.parse_args()
-    handle_args(args)
 
     if args.command == "add":
         txn = Transaction(
@@ -75,35 +74,23 @@ def main():
         print("Added.")
 
     elif args.command == "view":
-        txns = list_transactions(
-            txn_type=args.type,
-            category=args.category,
-            date_from=parse_date(args.date_from) if args.date_from else None,
-            date_to=parse_date(args.date_to) if args.date_to else None,
-        )
-        # print them...
-
-    elif args.command == "summary":
-        s = summarise(
-            date_from=parse_date(args.date_from) if args.date_from else None,
-            date_to=parse_date(args.date_to) if args.date_to else None,
-        )
-        print(s)
+        txns = list_transactions()
+        # print basic output
+        for t in txns:
+            print(t)
 
     elif args.command == "delete":
         delete_transaction(args.id)
         print("Deleted.")
 
+    elif args.command == "summary":
+        s = summarise()
+        print(s)
+
     elif args.command == "quit":
         if args.yes:
             return
         print("Use --yes to quit.")
-
-    elif args.command == "set_budget":
-        if args.category is None or args.monthly is None:
-            print("Please provide both --category and --monthly arguments.")
-            return
-        print(f"Setting budget for category {args.category} to {args.monthly}.")
 
 if __name__ == "__main__":
     main()
