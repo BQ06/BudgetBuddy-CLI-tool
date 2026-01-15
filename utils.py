@@ -9,9 +9,11 @@ def parse_date(s: str):
     return datetime.datetime.strptime(s, '%Y-%m-%d').date()
 
 # datetime.datetime used to convert string to date object
-def parse_month(s: str):
+def parse_month(s: str) -> tuple[datetime.date, datetime.date]:
+    d = datetime.datetime.strptime(s, '%Y-%m').date()
+    last_day = monthrange(d.year, d.month)[1]
     """Parse a month string in YYYY-MM format."""
-    return datetime.datetime.strptime(s, '%Y-%m').date()
+    return datetime.date(d.year, d.month, 1), datetime.date(d.year, d.month, last_day)
 
 def parse_amount(s: str):  # https://stackoverflow.com/questions/379906/how-do-i-parse-a-string-to-a-float-or-int
     """Parse a amount str to an int.  12.50 == 1250 pennies"""
@@ -26,11 +28,10 @@ def format_money(pennies: int): # https://docs.python.org/3/library/decimal.html
     return f"£{pounds:.2f}"
 
 def validate_type(t: str):
-    validate_types = {'income', 'expense'}
-    if t in validate_types:
+    validate_types = {'income', 'expense', 'transfer'}
+    if t not in validate_types:
+        raise ValueError(f"Invalid type: {t}. Must be one of {validate_types}")
         return t
-    else:
-        return None
 
 def date_in_range(d: datetime.date, start: datetime.date, end: datetime.date):
     if start <= d <= end: # function checks if the date d is between start and end
