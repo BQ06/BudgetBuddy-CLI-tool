@@ -126,7 +126,7 @@ def print_summary(summary: dict):
         print() 
         
 if __name__ == "__main__":
-    parser = main.build_parser()
+    parser = build_parser()
     args = parser.parse_args()
     main.handle_args(args)
   
