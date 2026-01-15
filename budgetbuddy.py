@@ -137,7 +137,5 @@ def print_summary(summary: dict):
         print()  
         
 if __name__ == "__main__":
-    parser = build_parser()
-    args = parser.parse_args()
-    handle_args(args)
+    main()
   
