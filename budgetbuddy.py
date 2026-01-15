@@ -41,7 +41,7 @@ def build_parser():
 
      # summary parser to view budget summary based on date range provided by user
     summary_parser = subparsers.add_parser("summary", help="View budget summary")
-    summary_parser.add_argument("==from", help="Start date for summary in YYYY-MM-DD format", type = str)
+    summary_parser.add_argument("--from", help="Start date for summary in YYYY-MM-DD format", type = str)
     summary_parser.add_argument("--to", help="End date for summary in YYYY-MM-DD format", type = str)
 
 
@@ -92,8 +92,7 @@ def main():
             return
         print("Use --yes to quit.")
 
-if __name__ == "__main__":
-    main()
+
 
 def handle_args(args):
       # Handle the parsed arguments and call appropriate functions
@@ -126,5 +125,8 @@ def print_summary(summary: dict):
         print(f"  Remaining: {data['remaining']:.2f}")
         print() 
         
-  
+if __name__ == "__main__":
+    parser = main.build_parser()
+    args = parser.parse_args()
+    main.handle_args(args)
   
