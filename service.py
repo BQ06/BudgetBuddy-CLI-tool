@@ -10,7 +10,7 @@ from models import Transaction  # Budget not needed in this file yet
 
 # Pullin JSO?N from storage
 DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), ".budget_buddy")
-DEFAULT_TXN_FILE = os.path.join(DEFAULT_DATA_DIR, "Transaction.json")
+DEFAULT_TXN_FILE = os.path.join(DEFAULT_DATA_DIR, "transactions.json")
 
 
 def _ensure_data_file(path: str = DEFAULT_TXN_FILE) -> None:
@@ -176,14 +176,20 @@ def summarise(
         except (TypeError, ValueError):
             return 0.0
 
-    total_income = sum(_amount(t.get("amount")) for t in filtered if t.get("type") == "income")
-    total_expense = sum(_amount(t.get("amount")) for t in filtered if t.get("type") == "expense")
+    def _pennies(x: Any) -> int:
+        try:
+            return int(x)
+        except (TypeError, ValueError):
+            return 0
+
+    total_income = sum(_pennies(t.get("amount_pennies")) for t in filtered if t.get("type") == "income")
+    total_expense = sum(_pennies(t.get("amount_pennies")) for t in filtered if t.get("type") == "expense")
     days = ((date_to or date.today()) - (date_from or date.today())).days + 1
     average_daily_spend = total_expense / max(days, 1)
 
     return {
-        "total_income": total_income,
-        "total_expense": total_expense,
-        "net_savings": total_income - total_expense,
-        "average_daily_spend": average_daily_spend,
+    "total_income_pennies": total_income,
+    "total_expense_pennies": total_expense,
+    "net_savings_pennies": total_income - total_expense,
     }
+
