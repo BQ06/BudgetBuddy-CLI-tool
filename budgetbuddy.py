@@ -74,10 +74,21 @@ def main():
         print("Added.")
 
     elif args.command == "view":
-        txns = list_transactions()
-        # print basic output
-        for t in txns:
-            print(t)
+        df = parse_date(args.date_from) if args.date_from else None
+        dt = parse_date(args.date_to) if args.date_to else None
+
+        txns = list_transactions(
+            txn_type=args.type,
+            category=args.category,
+            date_from=df,
+            date_to=dt,
+    )
+
+        if not txns:
+            print("No transactions found.")
+        else:
+            for t in txns:
+                print(t)
 
     elif args.command == "delete":
         delete_transaction(args.id)
@@ -123,7 +134,7 @@ def print_summary(summary: dict):
         print(f"  Budget: {data['budget']:.2f}")
         print(f"  Spent: {data['spent']:.2f}")
         print(f"  Remaining: {data['remaining']:.2f}")
-        print() 
+        print()  
         
 if __name__ == "__main__":
     parser = build_parser()
