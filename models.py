@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import datetime
 from dataclasses import dataclass
 from typing import Optional, Literal
-from __future__ import annotations
 
 TxnType = Literal['income', 'expense', 'transfer']
 
