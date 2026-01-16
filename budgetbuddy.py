@@ -1,6 +1,7 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
 import datetime
+import CSV
 
 from models import Transaction
 from utils import parse_amount, parse_date, format_money
@@ -53,8 +54,12 @@ def build_parser():
     set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
     set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
     set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
+    
+    import_parser = subparsers.add_parser("import", help="Import transactions from a CSV file")
+    
+    
+    
     return parser
-     
 
 
 def main():
@@ -135,7 +140,35 @@ def print_summary(summary: dict):
         print(f"  Spent: {data['spent']:.2f}")
         print(f"  Remaining: {data['remaining']:.2f}")
         print()  
+
+
+def CSV_import(filename: str) -> list[Transaction]:
+    # Import transactions from a CSV file
+    transactions = []
+    with open(filename, mode='r', encoding='utf8') as file:
+        reader = CSV.DictReader(file)
+        for row in reader:
+            txn = Transaction(
+                id=int(row['ID']),
+                type=row['Type'],
+                amount_pennies=parse_amount(row['Amount']),
+                category=row['Category'],
+                date=parse_date(row['Date']),
+                note=row['Note'] if row['Note'] else None,
+            )
+            transactions.append(txn)
+    return transactions
+
+
+def CSV_export(txns: list[Transaction], filename: str):
+    # Export transactions to a CSV file
+    with open(filename, mode='w', encoding='utf8', newline='') as file:
+        writer = CSV.writer(file)
+        writer.writerow(['ID', 'Type', 'Amount', 'Category', 'Date', 'Note'])
+        for txn in txns:
+            writer.writerow([txn.id, txn.type, format_money(txn.amount_pennies), txn.category, txn.date, txn.note or ""])
         
 if __name__ == "__main__":
     main()
   
+
