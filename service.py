@@ -56,14 +56,20 @@ def _parse_date(value: Any) -> date:
 
 
 def _to_dict(txn: Transaction) -> Dict[str, Any]:
-    """
-    Convert a Transaction model to JSON-safe dict.
-    Ensures date is saved as YYYY-MM-DD.
-    """
     d = txn.__dict__.copy()
-    if "date" in d:
+
+    if "date" in d and d["date"] is not None:
         d["date"] = _parse_date(d["date"]).isoformat()
+
+    # make created_at JSON safe that 
+    if "created_at" in d and d["created_at"] is not None:
+        if isinstance(d["created_at"], datetime):
+            d["created_at"] = d["created_at"].isoformat()
+        else:
+            d["created_at"] = str(d["created_at"])
+
     return d
+
 
 
 def _next_id(existing: List[Dict[str, Any]]) -> int:

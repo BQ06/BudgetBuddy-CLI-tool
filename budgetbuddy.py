@@ -29,8 +29,8 @@ def build_parser():
      # View transactions parser to see all transactions or filter by type
     view_parser = subparsers.add_parser("view", help="View transactions")
     view_parser.add_argument("--type", choices=["income", "expense"], help="Filter by transaction type", type = str)
-    view_parser.add_argument("--from", help="Start date for filtering transactions in YYYY-MM-DD format", type = str)
-    view_parser.add_argument("--to", help="End date for filtering transactions in YYYY-MM-DD format", type = str)
+    view_parser.add_argument("--from", dest="date_from", help="Start date for filtering transactions in YYYY-MM-DD format", type = str)
+    view_parser.add_argument("--to", dest="date_to", help="End date for filtering transactions in YYYY-MM-DD format", type = str)
     view_parser.add_argument("--category", help="Filter by category", type = str)
     
 
@@ -41,8 +41,8 @@ def build_parser():
 
      # summary parser to view budget summary based on date range provided by user
     summary_parser = subparsers.add_parser("summary", help="View budget summary")
-    summary_parser.add_argument("--from", help="Start date for summary in YYYY-MM-DD format", type = str)
-    summary_parser.add_argument("--to", help="End date for summary in YYYY-MM-DD format", type = str)
+    summary_parser.add_argument("--from", dest="date_from", help="Start date for summary in YYYY-MM-DD format", type = str)
+    summary_parser.add_argument("--to", dest="date_to", help="End date for summary in YYYY-MM-DD format", type = str)
 
 
     # delete parser to remove transactiosn by ID
