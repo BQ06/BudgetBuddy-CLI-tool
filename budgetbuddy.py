@@ -1,7 +1,7 @@
 # Used to parse command-line arguments for the Budget Buddy application found at https://docs.python.org/3/library/argparse.html#add-help
 import argparse
 import datetime
-import CSV
+import csv
 
 from models import Transaction
 from utils import parse_amount, parse_date, format_money
@@ -54,8 +54,18 @@ def build_parser():
     set_budget_parser = subparsers.add_parser("set_budget", help="Set a budget for a category")
     set_budget_parser.add_argument("--category", help="Category to set budget for", type = str)
     set_budget_parser.add_argument("--monthly", type=int, help="Monthly budget amount")
+    set_budget_parser.add_argument("--yearly", type=int, help="Yearly budget amount")
+    
+
+     # import and export parsers for CSV functionality
     
     import_parser = subparsers.add_parser("import", help="Import transactions from a CSV file")
+    import_parser.add_argument("--file", required=True, help="Path to the CSV file to import from", type = str)
+
+
+    export_parser = subparsers.add_parser("export", help="Export transactions to a CSV file")
+    export_parser.add_argument("--file", required=True, help="Path to the CSV file to export to", type = str)
+
     
     
     
@@ -108,6 +118,18 @@ def main():
             return
         print("Use --yes to quit.")
 
+    elif args.command == "import":
+        txns = CSV_import(args.file)
+        add_transactions(txns)
+        print(f"Imported {len(txns)} transactions.")
+
+    elif args.command == "export":
+        txns = list_transactions()
+        CSV_export(txns, args.file)
+        print(f"Exported {len(txns)} transactions.")
+
+
+
 
 
 def handle_args(args):
@@ -146,7 +168,7 @@ def CSV_import(filename: str) -> list[Transaction]:
     # Import transactions from a CSV file
     transactions = []
     with open(filename, mode='r', encoding='utf8') as file:
-        reader = CSV.DictReader(file)
+        reader = csv.DictReader(file)
         for row in reader:
             txn = Transaction(
                 id=int(row['ID']),
@@ -162,11 +184,18 @@ def CSV_import(filename: str) -> list[Transaction]:
 
 def CSV_export(txns: list[Transaction], filename: str):
     # Export transactions to a CSV file
-    with open(filename, mode='w', encoding='utf8', newline='') as file:
-        writer = CSV.writer(file)
+    with open(filename, mode='w', newline='', encoding="utf-8") as file:
+        writer = csv.writer(file)
         writer.writerow(['ID', 'Type', 'Amount', 'Category', 'Date', 'Note'])
-        for txn in txns:
-            writer.writerow([txn.id, txn.type, format_money(txn.amount_pennies), txn.category, txn.date, txn.note or ""])
+        for t in txns:
+            writer.writerow([
+                t.get("id", ""),
+                t.get("type", ""),
+                t.get("amount", ""),
+                t.get("category", ""),
+                t.get("date", ""),
+                t.get("note", "") or "", 
+            ])
         
 if __name__ == "__main__":
     main()
