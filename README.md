@@ -63,9 +63,12 @@ QUIT =  Quits from the application (not really utilized in terminal so not reall
 
 python3 budgetbuddy.py quit --yes
 
-
-5. Future implementations: 
+Future implementations: 
 
 1. Excel/XLSX import and export for transactions and summaries.
 2. Possible packaging as imported cli tool?
 3. Unit tests
+
+EXPORT = Export summary of income and expenses as a CSV, gets all data that has been added and stored in JSON.
+
+python3 budgetbuddy.py export test.csv
