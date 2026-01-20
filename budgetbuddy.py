@@ -173,7 +173,7 @@ def CSV_import(filename: str) -> list[Transaction]:
             txn = Transaction(
                 id=int(row['ID']),
                 type=row['Type'],
-                amount_pennies=parse_amount(row['Amount']),
+                amount_pennies=['Amount'],
                 category=row['Category'],
                 date=parse_date(row['Date']),
                 note=row['Note'] if row['Note'] else None,
